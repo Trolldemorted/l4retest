@@ -7,6 +7,7 @@ use crate::types::L4CapIndex;
 
 pub static L4RE_GLOBAL_ENV_ADDRESS: AtomicUsize = AtomicUsize::new(0);
 
+#[repr(C)]
 pub struct L4ReEnvPtr {
     pub address: usize,
 }

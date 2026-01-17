@@ -3,6 +3,7 @@
 #![allow(clippy::missing_safety_doc)]
 pub mod elf;
 pub mod env;
+pub mod l4re_core;
 pub mod types;
 pub mod utcb;
 use crate::{
@@ -32,10 +33,10 @@ _start:
     and rsp,  ~15
     call {main}
 ",
-main = sym main);
+main = sym start);
 
 // l4re-core/libc/uclibc-ng/contrib/uclibc/libc/misc/internals/uClibc_main.c:__uClibc_main
-unsafe fn main(argc: usize, argv: *const *const u8) {
+unsafe fn start(argc: usize, argv: *const *const u8) {
     unsafe {
         // The envrionment begins right after argv
         let mut __environ = argv.add(argc + 1);
@@ -53,9 +54,14 @@ unsafe fn main(argc: usize, argv: *const *const u8) {
         aux_dat = aux_dat.add(1);
 
         aux_init(aux_dat as _);
-        l4_vcon_send_u();
     };
 
+    main()
+    //TODO how to exit gracefully?
+}
+
+fn main() {
+    l4re_core::log::print("yay!\n");
     loop {}
 }
 

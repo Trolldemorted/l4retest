@@ -1,5 +1,6 @@
 use core::arch::asm;
 pub use core::prelude::*;
+use core::ptr;
 
 const L4_UTCB_MSG_REGS_OFFSET: usize = 0;
 const _L4_UTCB_GENERIC_DATA_SIZE: usize = 63;
@@ -39,5 +40,13 @@ impl L4MsgRegsPtr {
     pub unsafe fn write(&mut self, index: usize, value: usize) {
         let ptr: *mut usize = (self.address + 8 * index) as _;
         unsafe { *ptr = value };
+    }
+
+    /// TODO: Build safe abstraction
+    pub unsafe fn memcopy(&mut self, index: usize, value: &[u8]) {
+        let ptr: *mut u8 = (self.address + 8 * index) as _;
+        unsafe {
+            ptr::copy(value.as_ptr(), ptr, value.len());
+        }
     }
 }
